@@ -1,0 +1,32 @@
+name: drupal-8-gitlabci
+recipe: pantheon
+config:
+  framework: drupal8
+  env: dev
+  site: drupal8gitlabci
+  id: 5cb9275c-54c4-4a1a-9194-578ef0650b17
+events:
+  post-db-import:
+    - appserver: cd $LANDO_MOUNT && composer install
+services:
+  appserver:
+    overrides:
+      services:
+        environment:
+          BEHAT_PARAMS: >-
+            {"extensions" : {"Behat\\MinkExtension" : {"base_url" :
+            "http://dev-drupal8gitlabci.pantheonsite.io/"}, "Drupal\\DrupalExtension" : {"drush" :   {
+            "root":  "/app/web" }}}}
+tooling:
+  phplint:
+    service: appserver
+    cmd: /app/vendor/bin/phplint
+  phpcs:
+    service: appserver
+    cmd: /app/vendor/bin/phpcs
+  phpunit:
+    service: appserver
+    cmd: /app/vendor/bin/phpunit
+  behat:
+    service: appserver
+    cmd: /app/vendor/bin/behat
